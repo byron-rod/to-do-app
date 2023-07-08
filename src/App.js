@@ -43,7 +43,7 @@ function App() {
     setTodo(newTask);
   }
 
-  // Display the counter
+  // Display the To-do App
   
   return (
     <div className="container App">
