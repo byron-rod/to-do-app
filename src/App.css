@@ -5,12 +5,12 @@ body {
 
 .App h2 {
   color: white;
+  margin: 40px; 
 }
 
 .App p {
   color: white;
 }
-
 
 .App {
   text-align: center;
@@ -18,11 +18,12 @@ body {
 
 .taskBackG {
   background-color: #5c5858;
-  border-radius: 220px;
-  margin-bottom: 20px;
-  padding: 10px 80px 10px 15px;
-  text-align: left;
-  font-size: 22px;
+  border-radius: 10px; 
+  width: 60%; 
+  margin: 0 auto; 
+  padding: 10px; 
+  text-align: center; 
+  font-size: 18px; 
   position: relative;
 }
 
@@ -80,4 +81,8 @@ body {
   right: 15px;
   width: auto;
   display: inline-block;
+}
+
+.form-control-lg {
+  text-align: center;
 }

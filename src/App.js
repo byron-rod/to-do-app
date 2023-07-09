@@ -1,6 +1,7 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useState} from 'react'
+
 import AddTaskForm from './components/AddTaskForm.jsx'
 import ToDo from './components/ToDo';
 import noTasksGif  from './components/pulp-fiction-john-travolta.gif'
@@ -43,12 +44,29 @@ function App() {
     setTodo(newTask);
   }
 
+  // const [json, setjson] = useState([]);
+  // const [loading, setLoading] = useState(false);
+
+  // // useEffect fetching api
+  // useEffect(() => {
+  //   fetch("https://jsonplaceholder.typicode.com/todos")
+  //     .then((response) => response.json())
+  //     .then((json) => {
+  //       setTimeout(() => {
+
+  //         setjson(json)
+  //         setLoading(true);
+  //       }, 1000);
+  //     })
+  // })
+
+
   // Display the To-do App
   
   return (
     <div className="container App">
 
-      <h2>To Do List with React</h2>
+      <h2>ToDos with React</h2>
     
     {/* add task */}
     <AddTaskForm 
