@@ -1,95 +1,122 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useState} from 'react'
-
-import AddTaskForm from './components/AddTaskForm.jsx'
+import { useState, useEffect } from 'react';
+import AddTaskForm from './components/AddTaskForm';
 import ToDo from './components/ToDo';
-import noTasksGif  from './components/pulp-fiction-john-travolta.gif'
+import noTasksGif from './components/pulp-fiction-john-travolta.gif';
 
 function App() {
-  
   // tasks toDo List
-  const [toDo, setTodo] = useState([
-    {id: 1, title: "Example task 1", status: false},
-    {id: 2, title: "Example task 2", status: false}
-  ]);
-  
-  // temp state
-  const [newTask, setNewTask] = useState('');
-  
+  const [toDo, setToDo] = useState([]);
+
+  // fetch the initial tasks from the API
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+// fetch tasks from the API
+const fetchTasks = () => {
+  fetch('https://jsonplaceholder.typicode.com/todos')
+    .then((response) => response.json())
+    .then((data) => {
+      const limitedTasks = data.splice(0, 10);
+      setToDo(limitedTasks);
+    })
+    .catch((error) => console.log(error));
+};
+
   // add task function
-  const addTask = () => {
-    if(newTask) {
-      let num = toDo.length + 1;
-      let newEntry = { id: num, title: newTask, status: false}
-      setTodo([...toDo, newEntry])
-      setNewTask('');
+  const addTask = (newTaskTitle) => {
+    if (newTaskTitle) {
+      const newTask = {
+        id: Date.now(),
+        title: newTaskTitle,
+        completed: false,
+      };
+
+      fetch('https://jsonplaceholder.typicode.com/todos', {
+        method: 'POST',
+        body: JSON.stringify(newTask),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setToDo([...toDo, data]);
+        })
+        .catch((error) => console.log(error));
     }
-  }
+  };
 
   // delete task function
   const deleteTask = (id) => {
-    let newTasks = toDo.filter( task => task.id !== id)
-    setTodo(newTasks);
-  }
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: 'DELETE',
+    })
+      .then(() => {
+        const updatedTasks = toDo.filter((task) => task.id !== id);
+        setToDo(updatedTasks);
+      })
+      .catch((error) => console.log(error));
+  };
 
   // mark task as completed
   const markDone = (id) => {
-    let newTask = toDo.map( task => {
-      if( task.id === id ) {
-        return({...task, status: !task.status})
+    const updatedTasks = toDo.map((task) => {
+      if (task.id === id) {
+        return { ...task, completed: !task.completed };
       }
       return task;
+    });
+
+    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(updatedTasks.find((task) => task.id === id)),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-    setTodo(newTask);
-  }
+      .then(() => {
+        setToDo(updatedTasks);
+      })
+      .catch((error) => console.log(error));
+  };
 
-  // const [json, setjson] = useState([]);
-  // const [loading, setLoading] = useState(false);
-
-  // // useEffect fetching api
-  // useEffect(() => {
-  //   fetch("https://jsonplaceholder.typicode.com/todos")
-  //     .then((response) => response.json())
-  //     .then((json) => {
-  //       setTimeout(() => {
-
-  //         setjson(json)
-  //         setLoading(true);
-  //       }, 1000);
-  //     })
-  // })
-
+  // delete all tasks function
+  const deleteAllTasks = () => {
+    fetch('https://jsonplaceholder.typicode.com/todos', {
+      method: 'DELETE',
+    })
+      .then(() => {
+        setToDo([]);
+      })
+      .catch((error) => console.log(error));
+  };
 
   // Display the To-do App
-  
   return (
     <div className="container App">
-
       <h2>ToDos with React</h2>
-    
-    {/* add task */}
-    <AddTaskForm 
-      newTask = {newTask}    
-      setNewTask = {setNewTask}
-      addTask = {addTask}
-    />
 
-    {/* display no tasks */}
-      {toDo && toDo.length ? '' : 
-      <div>
-      <p>There are no tasks...</p>
-      <img src={noTasksGif} alt="No tasks GIF" />
-    </div>
-      }
+      {/* add task */}
+      <AddTaskForm addTask={addTask} />
 
-    {/* To Do tasks */}
+      {/* display no tasks */}
+      {toDo.length === 0 && (
+        <div>
+          <p>There are no tasks...</p>
+          <img src={noTasksGif} alt="No tasks GIF" />
+        </div>
+      )}
+
+      {/* To Do tasks */}
       <ToDo
-        toDo = {toDo}
-        markDone = {markDone}
-        deleteTask = {deleteTask}
+        toDo={toDo}
+        markDone={markDone}
+        deleteTask={deleteTask}
+        deleteAllTasks={deleteAllTasks}
       />
-
     </div>
   );
 }
